@@ -19,6 +19,10 @@ public class Account {
     public int getMoney() {
         return money;
     }
+
+    public Account changeBalance(int delta) {
+        return new Account(this.id, this.money + delta);
+    }
 }
 
 
