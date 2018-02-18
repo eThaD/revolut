@@ -28,4 +28,9 @@ public class InMemoryAccountStore implements AccountStore {
         this.accounts.put(accountId, account);
         return true;
     }
+
+    @Override
+    public Account getAccount(String accountId) {
+        return this.accounts.get(accountId);
+    }
 }
