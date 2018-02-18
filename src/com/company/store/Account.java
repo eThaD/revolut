@@ -20,8 +20,12 @@ public class Account {
         return money;
     }
 
-    public Account changeBalance(int delta) {
+    public Account add(int delta) {
         return new Account(this.id, this.money + delta);
+    }
+
+    public Account subtract(int delta) {
+        return new Account(this.id, this.money - delta);
     }
 }
 

@@ -2,8 +2,6 @@ package com.company.services;
 
 import com.company.store.Account;
 import com.company.store.AccountStore;
-import com.company.store.Transaction;
-import com.company.store.TransactionStore;
 
 /**
  * Created by eThaD on 18.02.2018.
@@ -19,7 +17,28 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void transferMoney(String from, String to, int amount) {
+        int transactionFrom = transactionRepository.LogTransaction(from, -amount);
+        int transactionTo = transactionRepository.LogTransaction(to, amount);
 
+        Account accountFrom = accountStore.getAccount(from);
+        if (accountFrom == null) {
+            transactionRepository.FailTransaction(transactionFrom);
+            transactionRepository.FailTransaction(transactionTo);
+        }
+
+        Account accountTo = accountStore.getAccount(to);
+        if (accountTo == null) {
+            transactionRepository.FailTransaction(transactionFrom);
+            transactionRepository.FailTransaction(transactionTo);
+        }
+
+        Account newFrom = accountFrom.subtract(amount);
+        Account newTo = accountTo.add(amount);
+
+        accountStore.updateAccount(from, newFrom);
+        transactionRepository.SucceedTransaction(transactionFrom);
+        accountStore.updateAccount(to, newTo);
+        transactionRepository.SucceedTransaction(transactionTo);
     }
 
     @Override
@@ -29,8 +48,8 @@ public class TransactionServiceImpl implements TransactionService {
         if (account == null) {
             transactionRepository.FailTransaction(transactionId);
         }
-        // check for negative total balance??
-        Account accountWithNewBalance = account.changeBalance(amount);
+
+        Account accountWithNewBalance = account.add(amount);
 
         accountStore.updateAccount(accountId, accountWithNewBalance);
 
@@ -38,6 +57,17 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void withdraw(String account, int amount) {
+    public void withdraw(String accountId, int amount) {
+        int transactionId = transactionRepository.LogTransaction(accountId, -amount);
+        Account account = accountStore.getAccount(accountId);
+        if (account == null) {
+            transactionRepository.FailTransaction(transactionId);
+        }
+
+        Account accountWithNewBalance = account.subtract(amount);
+
+        accountStore.updateAccount(accountId, accountWithNewBalance);
+
+        transactionRepository.SucceedTransaction(transactionId);
     }
 }
