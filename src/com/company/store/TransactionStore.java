@@ -5,4 +5,6 @@ package com.company.store;
  */
 public interface TransactionStore {
     int addTransaction(Transaction transaction);
+    Transaction getTransaction(int id);
+    void updateTransaction(Transaction transaction);
 }

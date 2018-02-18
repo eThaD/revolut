@@ -17,9 +17,20 @@ public class InMemoryTransactionStore implements TransactionStore {
     @Override
     public int addTransaction(Transaction transaction) {
         int id = this.sequenceNumber;
+        transaction.setId(id);
         this.sequenceNumber++;
         transactions.put(id, transaction);
 
         return id;
+    }
+
+    @Override
+    public Transaction getTransaction(int id) {
+        return transactions.get(id);
+    }
+
+    @Override
+    public void updateTransaction(Transaction transaction) {
+        transactions.put(transaction.getId(), transaction);
     }
 }

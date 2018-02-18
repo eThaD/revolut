@@ -10,11 +10,11 @@ import com.company.store.TransactionStore;
  */
 public class TransactionServiceImpl implements TransactionService {
     private AccountStore accountStore;
-    private TransactionStore transactionStore;
+    private TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(AccountStore accountStore, TransactionStore transactionStore) {
+    public TransactionServiceImpl(AccountStore accountStore, TransactionRepository transactionRepository) {
         this.accountStore = accountStore;
-        this.transactionStore = transactionStore;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -24,20 +24,20 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void topUp(String accountId, int amount) {
-        int transactionId = transactionStore.addTransaction(new Transaction(accountId, amount));
+        int transactionId = transactionRepository.LogTransaction(accountId, amount);
         Account account = accountStore.getAccount(accountId);
         if (account == null) {
-            // update transaction to failed status
+            transactionRepository.FailTransaction(transactionId);
         }
         // check for negative total balance??
         Account accountWithNewBalance = account.changeBalance(amount);
 
         accountStore.updateAccount(accountId, accountWithNewBalance);
 
-        // update transaction to succeeded status
+        transactionRepository.SucceedTransaction(transactionId);
     }
 
     @Override
-    public void Withdraw(String account, int amount) {
+    public void withdraw(String account, int amount) {
     }
 }
