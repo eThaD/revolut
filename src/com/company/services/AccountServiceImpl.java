@@ -22,4 +22,9 @@ public class AccountServiceImpl implements AccountService {
     public void createAccount(String id, int initialSum) {
         accountStore.createAccount(id, new Account(id, initialSum));
     }
+
+    @Override
+    public Account getAccount(String id) {
+        return accountStore.getAccount(id);
+    }
 }

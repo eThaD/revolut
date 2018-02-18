@@ -15,6 +15,7 @@ public class Main {
         AccountService accountService = new AccountServiceImpl(accountStore);
         AccountHandler accountHandler = new AccountHandlerImpl(accountService);
 
-        get("/hello", (req, res) -> accountHandler.createAccount(req, res));
+        post("/accounts/", (req, res) -> accountHandler.createAccount(req, res));
+        get("/accounts/:id", (req, res) -> accountHandler.getAccount(req, res));
     }
 }
