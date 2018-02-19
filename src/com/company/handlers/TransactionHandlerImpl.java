@@ -29,9 +29,9 @@ public class TransactionHandlerImpl implements TransactionHandler {
             response.status(400);
             return "From and To accounts are not provided";
         }
-        if (transaction.getAmount() == 0) {
+        if (transaction.getAmount() <= 0) {
             response.status(400);
-            return "Amount to transfer is not provided";
+            return "Amount to transfer is incorrect";
         }
         if (transaction.getFrom() == null) {
             transactionService.topUp(transaction.getTo(), transaction.getAmount());
