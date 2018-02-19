@@ -23,8 +23,12 @@ public class AccountHandlerImpl implements AccountHandler {
         Gson gson = builder.create();
 
         Account account = gson.fromJson(request.body(), Account.class);
-        accountService.createAccount(account.getId());
+        if (account.getId() == null) {
+            response.status(400);
+            return "Account id is not provided";
+        }
 
+        accountService.createAccount(account.getId());
         return "";
     }
 
@@ -34,11 +38,11 @@ public class AccountHandlerImpl implements AccountHandler {
         Gson gson = builder.create();
 
         com.company.store.Account account = accountService.getAccount(req.params("id"));
-        Account accountDto = new Account(account.getId(), account.getMoney());
+        if (account == null) {
+            res.status(404);
+        }
 
-        String accountJson = gson.toJson(accountDto);
-        res.body(accountJson);
-
+        String accountJson = gson.toJson(new Account(account.getId(), account.getMoney()));
         return accountJson;
     }
 }
