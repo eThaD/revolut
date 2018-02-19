@@ -1,4 +1,4 @@
-package com.company.handlers;
+package com.company.controllers;
 
 import com.company.dto.Transaction;
 import com.company.services.TransactionService;
@@ -6,15 +6,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
-import static spark.Spark.*;
 
 /**
  * Created by eThaD on 19.02.2018.
  */
-public class TransactionHandlerImpl implements TransactionHandler {
+public class TransactionControllerImpl implements TransactionController {
     private TransactionService transactionService;
 
-    public TransactionHandlerImpl(TransactionService transactionService) {
+    public TransactionControllerImpl(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

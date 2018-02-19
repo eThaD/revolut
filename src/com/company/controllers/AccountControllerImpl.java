@@ -1,4 +1,4 @@
-package com.company.handlers;
+package com.company.controllers;
 
 import com.company.dto.Account;
 import com.company.services.AccountService;
@@ -10,10 +10,10 @@ import spark.Response;
 /**
  * Created by eThaD on 18.02.2018.
  */
-public class AccountHandlerImpl implements AccountHandler {
+public class AccountControllerImpl implements AccountController {
     private AccountService accountService;
 
-    public AccountHandlerImpl(AccountService accountService) {
+    public AccountControllerImpl(AccountService accountService) {
         this.accountService = accountService;
     }
 
