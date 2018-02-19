@@ -7,12 +7,5 @@ repositories {
 dependencies {
     compile 'com.sparkjava:spark-core:2.7.1'
     compile 'com.google.code.gson:gson:2.8.2'
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ["src"]
-        }
-    }
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
 }
