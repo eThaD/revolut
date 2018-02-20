@@ -20,17 +20,7 @@ public class AccountControllerImpl implements AccountController {
 
     @Override
     public Object createAccount(Request request, Response response) {
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-
-        Account account = gson.fromJson(request.body(), Account.class);
-        if (account.getId() == null) {
-            response.status(400);
-            return "Account id is not provided";
-        }
-
-        accountService.createAccount(account.getId());
-        return "";
+        return accountService.createAccount();
     }
 
     @Override
@@ -41,6 +31,7 @@ public class AccountControllerImpl implements AccountController {
         com.company.store.Account account = accountService.getAccount(req.params("id"));
         if (account == null) {
             res.status(404);
+            return null;
         }
 
         String accountJson = gson.toJson(new Account(account.getId(), account.getMoney()));

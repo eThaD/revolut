@@ -1,5 +1,6 @@
 package com.company.services;
 
+import java.util.UUID;
 import com.company.store.Account;
 import com.company.store.AccountStore;
 
@@ -14,13 +15,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createAccount(String id) {
-        createAccount(id, 0);
-    }
-
-    @Override
-    public void createAccount(String id, int initialSum) {
-        accountStore.createAccount(id, new Account(id, initialSum));
+    public String createAccount() {
+        for(;;) {
+            String id = UUID.randomUUID().toString();
+            if (accountStore.createAccount(id, new Account(id, 0))) return id;
+        }
     }
 
     @Override
