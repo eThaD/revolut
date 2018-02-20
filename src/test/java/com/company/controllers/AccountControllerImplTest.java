@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by eThaD on 19.02.2018.
  */
-public class AccountControllerImpl {
+public class AccountControllerImplTest {
 
     @Test
-    public void createAccount_IncorrectAccount_ReturnsError(){
+    public void example(){
         assertTrue(false);
     }
 }
