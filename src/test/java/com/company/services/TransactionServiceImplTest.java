@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 public class TransactionServiceImplTest {
 
     @Test
-    public void withdraw_returnsError_ifAccountDoesntExist(){
+    public void withdraw_returnsError_ifAccountDoesntExist() {
         AccountStore accountStore = mock(AccountStore.class);
         when(accountStore.getAccount("acc1")).thenReturn(null);
         TransactionServiceImpl sut = new TransactionServiceImpl(accountStore);
@@ -24,7 +24,7 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    public void withdraw_returnsError_ifBalanceIsNotEnough(){
+    public void withdraw_returnsError_ifBalanceIsNotEnough() {
         AccountStore accountStore = mock(AccountStore.class);
         when(accountStore.getAccount("acc1")).thenReturn(new Account("acc1", 100));
         TransactionServiceImpl sut = new TransactionServiceImpl(accountStore);
@@ -48,7 +48,6 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    //@RepeatedTest(100)
     public void withdraw_returnsError_ifUnableToLockAccount() {
         AccountStore accountStore = mock(AccountStore.class);
         Account account = new Account("acc1", 100);
@@ -73,4 +72,55 @@ public class TransactionServiceImplTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void topUp_returnsError_ifAccountDoesntExist() {
+        AccountStore accountStore = mock(AccountStore.class);
+        when(accountStore.getAccount("acc1")).thenReturn(null);
+        TransactionServiceImpl sut = new TransactionServiceImpl(accountStore);
+
+        Status result = sut.topUp("acc1", 200);
+
+        assertEquals(Status.ACCOUNT_NOT_FOUND, result);
+    }
+
+    @Test
+    public void topUp_addMoney_ifAccountExists() {
+        AccountStore accountStore = mock(AccountStore.class);
+        Account account = new Account("acc1", 100);
+        when(accountStore.getAccount("acc1")).thenReturn(account);
+        TransactionServiceImpl sut = new TransactionServiceImpl(accountStore);
+
+        Status result = sut.topUp("acc1", 50);
+
+        assertEquals(Status.SUCCESS, result);
+        assertEquals(150, account.getBalance());
+    }
+
+    @Test
+    public void topUp_returnsError_ifUnableToLockAccount() {
+        AccountStore accountStore = mock(AccountStore.class);
+        Account account = new Account("acc1", 100);
+        when(accountStore.getAccount("acc1")).thenReturn(account);
+        TransactionServiceImpl sut = new TransactionServiceImpl(accountStore);
+
+        try {
+            account.tryGetLock(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Thread t = new Thread(() -> {
+            Status result = sut.topUp("acc1", 50);
+            assertEquals(Status.STORAGE_UNAVAILABLE, result);
+        });
+
+        try {
+            t.start();
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
