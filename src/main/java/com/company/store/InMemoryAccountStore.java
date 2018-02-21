@@ -1,15 +1,15 @@
 package com.company.store;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by eThaD on 18.02.2018.
  */
 public class InMemoryAccountStore implements AccountStore {
-    private HashMap<String, Account> accounts;
+    private ConcurrentHashMap<String, Account> accounts;
 
     public InMemoryAccountStore() {
-        accounts = new HashMap<>();
+        accounts = new ConcurrentHashMap<>();
     }
 
     @Override
