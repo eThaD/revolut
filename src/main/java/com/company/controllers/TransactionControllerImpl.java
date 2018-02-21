@@ -8,8 +8,6 @@ import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
 
-import static com.company.services.Status.*;
-
 /**
  * Created by eThaD on 19.02.2018.
  */
