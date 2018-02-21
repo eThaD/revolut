@@ -15,13 +15,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Status transferMoney(String from, String to, int amount) {
-        if (from.equalsIgnoreCase(to)) {
-            return Status.SUCCESS;
-        }
-
         Account accountFrom = accountStore.getAccount(from);
         if (accountFrom == null) {
             return Status.ACCOUNT_NOT_FOUND;
+        }
+
+        if (from.equalsIgnoreCase(to)) {
+            return Status.SUCCESS;
         }
 
         Account accountTo = accountStore.getAccount(to);
