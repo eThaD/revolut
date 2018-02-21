@@ -23,7 +23,7 @@ public class Main {
 
         TransactionStore transactionStore = new InMemoryTransactionStore();
         TransactionRepository transactionRepository = new TransactionRepositoryImpl(transactionStore);
-        TransactionService transactionService = new TransactionServiceImpl(accountStore, transactionRepository);
+        TransactionService transactionService = new TransactionServiceImpl(accountStore);
         TransactionController transactionController = new TransactionControllerImpl(transactionService);
 
         post("/accounts/", (req, res) -> accountController.createAccount(req, res));

@@ -22,14 +22,6 @@ public class InMemoryAccountStore implements AccountStore {
     }
 
     @Override
-    public boolean updateAccount(String accountId, Account account) {
-        if (this.accounts.get(accountId) == null) return false;
-
-        this.accounts.put(accountId, account);
-        return true;
-    }
-
-    @Override
     public Account getAccount(String accountId) {
         return this.accounts.get(accountId);
     }

@@ -5,6 +5,5 @@ package com.company.store;
  */
 public interface AccountStore {
     boolean createAccount(String accountId, Account account);
-    boolean updateAccount(String accountId, Account account);
     Account getAccount(String accountId);
 }

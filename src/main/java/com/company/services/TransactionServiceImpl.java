@@ -8,66 +8,86 @@ import com.company.store.AccountStore;
  */
 public class TransactionServiceImpl implements TransactionService {
     private AccountStore accountStore;
-    private TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(AccountStore accountStore, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(AccountStore accountStore) {
         this.accountStore = accountStore;
-        this.transactionRepository = transactionRepository;
     }
 
     @Override
-    public void transferMoney(String from, String to, int amount) {
-        int transactionFrom = transactionRepository.LogTransaction(from, -amount);
-        int transactionTo = transactionRepository.LogTransaction(to, amount);
+    public Status transferMoney(String from, String to, int amount) {
+        if (from.equalsIgnoreCase(to)) {
+            return Status.SUCCESS;
+        }
 
         Account accountFrom = accountStore.getAccount(from);
         if (accountFrom == null) {
-            transactionRepository.FailTransaction(transactionFrom);
-            transactionRepository.FailTransaction(transactionTo);
+            return Status.ACCOUNT_NOT_FOUND;
         }
 
         Account accountTo = accountStore.getAccount(to);
         if (accountTo == null) {
-            transactionRepository.FailTransaction(transactionFrom);
-            transactionRepository.FailTransaction(transactionTo);
+            return Status.ACCOUNT_NOT_FOUND;
         }
 
-        Account newFrom = accountFrom.subtract(amount);
-        Account newTo = accountTo.add(amount);
+        try {
+            if (accountFrom.getId().compareTo(accountTo.getId()) < 0) {
+                accountFrom.tryGetLock(1);
+                accountTo.tryGetLock(1);
+            } else {
+                accountTo.tryGetLock(1);
+                accountFrom.tryGetLock(1);
+            }
 
-        accountStore.updateAccount(from, newFrom);
-        transactionRepository.SucceedTransaction(transactionFrom);
-        accountStore.updateAccount(to, newTo);
-        transactionRepository.SucceedTransaction(transactionTo);
+            if (accountFrom.getMoney() < amount) {
+                return Status.INSUFFICIENT_FUNDS;
+            }
+
+            accountFrom.subtract(amount);
+            accountTo.add(amount);
+            return Status.SUCCESS;
+        } catch (InterruptedException e) {
+            return Status.STORAGE_UNAVAILABLE;
+        } finally {
+            accountFrom.unlock();
+            accountTo.unlock();
+        }
     }
 
     @Override
-    public void topUp(String accountId, int amount) {
-        int transactionId = transactionRepository.LogTransaction(accountId, amount);
+    public Status topUp(String accountId, int amount) {
         Account account = accountStore.getAccount(accountId);
         if (account == null) {
-            transactionRepository.FailTransaction(transactionId);
+            return Status.ACCOUNT_NOT_FOUND;
         }
 
-        Account accountWithNewBalance = account.add(amount);
+        try {
+            account.tryGetLock(1);
+            account.add(amount);
+            return Status.SUCCESS;
+        } catch (InterruptedException e) {
+            return Status.STORAGE_UNAVAILABLE;
+        } finally {
+            account.unlock();
 
-        accountStore.updateAccount(accountId, accountWithNewBalance);
-
-        transactionRepository.SucceedTransaction(transactionId);
+        }
     }
 
     @Override
-    public void withdraw(String accountId, int amount) {
-        int transactionId = transactionRepository.LogTransaction(accountId, -amount);
+    public Status withdraw(String accountId, int amount) {
         Account account = accountStore.getAccount(accountId);
         if (account == null) {
-            transactionRepository.FailTransaction(transactionId);
+            return Status.ACCOUNT_NOT_FOUND;
         }
 
-        Account accountWithNewBalance = account.subtract(amount);
 
-        accountStore.updateAccount(accountId, accountWithNewBalance);
-
-        transactionRepository.SucceedTransaction(transactionId);
+        try {
+            account.tryGetLock(1);
+            account.subtract(amount);
+            return Status.SUCCESS;
+        } catch (InterruptedException e) {
+            return Status.STORAGE_UNAVAILABLE;
+        } finally {
+            account.unlock();
+        }
     }
 }
