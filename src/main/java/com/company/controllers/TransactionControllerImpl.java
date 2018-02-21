@@ -1,11 +1,14 @@
 package com.company.controllers;
 
 import com.company.dto.Transaction;
+import com.company.services.Status;
 import com.company.services.TransactionService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
+
+import static com.company.services.Status.*;
 
 /**
  * Created by eThaD on 19.02.2018.
@@ -33,15 +36,33 @@ public class TransactionControllerImpl implements TransactionController {
             return "Amount to transfer is incorrect";
         }
         if (transaction.getFrom() == null) {
-            transactionService.topUp(transaction.getTo(), transaction.getAmount());
+            Status status = transactionService.topUp(transaction.getTo(), transaction.getAmount());
+            response.status(mapInternalStatusToHttpStatus(status));
             return "";
         }
         if (transaction.getTo() == null) {
-            transactionService.withdraw(transaction.getFrom(), transaction.getAmount());
+            Status status = transactionService.withdraw(transaction.getFrom(), transaction.getAmount());
+            response.status(mapInternalStatusToHttpStatus(status));
             return "";
         }
 
-        transactionService.transferMoney(transaction.getFrom(), transaction.getTo(), transaction.getAmount());
+        Status status = transactionService.transferMoney(transaction.getFrom(), transaction.getTo(), transaction.getAmount());
+        response.status(mapInternalStatusToHttpStatus(status));
         return "";
+    }
+
+    private int mapInternalStatusToHttpStatus(Status status) {
+        switch (status) {
+            case ACCOUNT_NOT_FOUND:
+                return 404;
+            case SUCCESS:
+                return 200;
+            case INSUFFICIENT_FUNDS:
+                return 400;
+            case STORAGE_UNAVAILABLE:
+                return 500;
+            default:
+                return 500;
+        }
     }
 }
