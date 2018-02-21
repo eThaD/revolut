@@ -1,6 +1,5 @@
 package com.company.services;
 
-import java.util.UUID;
 import com.company.store.Account;
 import com.company.store.AccountStore;
 import com.company.utils.UuidProvider;

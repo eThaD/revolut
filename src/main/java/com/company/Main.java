@@ -12,7 +12,8 @@ import com.company.store.TransactionStore;
 import com.company.utils.UuidProvider;
 import com.company.utils.UuidProviderImpl;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 public class Main {
     public static void main(String[] args) {
