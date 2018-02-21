@@ -15,7 +15,7 @@ public class Account {
     public Account(String id, int initialBalance) {
         this.id = id;
         this.balance = initialBalance;
-        this.lock = new ReentrantLock();
+        this.lock = new ReentrantLock(false);
     }
 
     public boolean tryGetLock(long timeoutSeconds) throws InterruptedException {
@@ -35,11 +35,11 @@ public class Account {
     }
 
     public void add(int delta) {
-        this.balance =+ delta;
+        this.balance += delta;
     }
 
     public void subtract(int delta) {
-        this.balance =- delta;
+        this.balance -= delta;
     }
 }
 
