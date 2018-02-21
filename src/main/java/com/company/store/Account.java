@@ -18,8 +18,8 @@ public class Account {
         this.lock = new ReentrantLock();
     }
 
-    public void tryGetLock(long timeoutSeconds) throws InterruptedException {
-        this.lock.tryLock(timeoutSeconds, TimeUnit.SECONDS);
+    public boolean tryGetLock(long timeoutSeconds) throws InterruptedException {
+        return this.lock.tryLock(timeoutSeconds, TimeUnit.SECONDS);
     }
 
     public void unlock() {

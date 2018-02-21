@@ -29,28 +29,43 @@ public class TransactionServiceImpl implements TransactionService {
             return Status.ACCOUNT_NOT_FOUND;
         }
 
+        // Comparing account ids to always lock them in the same order to prevent dead-locks
+        Account firstToLock;
+        Account secondToLock;
+        if (accountFrom.getId().compareTo(accountTo.getId()) < 0) {
+            firstToLock = accountFrom;
+            secondToLock = accountTo;
+        } else {
+            firstToLock = accountTo;
+            secondToLock = accountFrom;
+        }
+
         try {
-            // Comparing account ids to always lock them in the same order to prevent dead-locks
-            if (accountFrom.getId().compareTo(accountTo.getId()) < 0) {
-                accountFrom.tryGetLock(1);
-                accountTo.tryGetLock(1);
-            } else {
-                accountTo.tryGetLock(1);
-                accountFrom.tryGetLock(1);
-            }
+            if (firstToLock.tryGetLock(1)) {
+                try {
+                    if (secondToLock.tryGetLock(1)){
+                        try {
+                            if (accountFrom.getBalance() < amount) {
+                                return Status.INSUFFICIENT_FUNDS;
+                            }
 
-            if (accountFrom.getBalance() < amount) {
-                return Status.INSUFFICIENT_FUNDS;
-            }
+                            accountFrom.subtract(amount);
+                            accountTo.add(amount);
 
-            accountFrom.subtract(amount);
-            accountTo.add(amount);
-            return Status.SUCCESS;
+                            return Status.SUCCESS;
+                        } finally {
+                            secondToLock.unlock();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    return Status.STORAGE_UNAVAILABLE;
+                } finally {
+                    firstToLock.unlock();
+                }
+            }
+            return Status.STORAGE_UNAVAILABLE;
         } catch (InterruptedException e) {
             return Status.STORAGE_UNAVAILABLE;
-        } finally {
-            accountFrom.unlock();
-            accountTo.unlock();
         }
     }
 
@@ -62,14 +77,14 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         try {
-            account.tryGetLock(1);
-            account.add(amount);
-            return Status.SUCCESS;
+            if (account.tryGetLock(1)){
+                account.add(amount);
+                account.unlock();
+                return Status.SUCCESS;
+            }
+            return Status.STORAGE_UNAVAILABLE;
         } catch (InterruptedException e) {
             return Status.STORAGE_UNAVAILABLE;
-        } finally {
-            account.unlock();
-
         }
     }
 
@@ -80,15 +95,21 @@ public class TransactionServiceImpl implements TransactionService {
             return Status.ACCOUNT_NOT_FOUND;
         }
 
-
         try {
-            account.tryGetLock(1);
-            account.subtract(amount);
-            return Status.SUCCESS;
+            if (account.tryGetLock(1)) {
+                try {
+                    if (account.getBalance() < amount) {
+                        return Status.INSUFFICIENT_FUNDS;
+                    }
+                    account.subtract(amount);
+                    return Status.SUCCESS;
+                } finally {
+                    account.unlock();
+                }
+            }
+            return Status.STORAGE_UNAVAILABLE;
         } catch (InterruptedException e) {
             return Status.STORAGE_UNAVAILABLE;
-        } finally {
-            account.unlock();
         }
     }
 }
