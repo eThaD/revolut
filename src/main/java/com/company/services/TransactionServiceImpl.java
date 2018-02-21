@@ -30,6 +30,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         try {
+            // Comparing account ids to always lock them in the same order to prevent dead-locks
             if (accountFrom.getId().compareTo(accountTo.getId()) < 0) {
                 accountFrom.tryGetLock(1);
                 accountTo.tryGetLock(1);
