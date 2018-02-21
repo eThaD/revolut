@@ -34,7 +34,6 @@ public class AccountControllerImpl implements AccountController {
             return null;
         }
 
-        String accountJson = gson.toJson(new Account(accountSnapshot.getId(), accountSnapshot.getBalance()));
-        return accountJson;
+        return gson.toJson(new Account(accountSnapshot.getId(), accountSnapshot.getBalance()));
     }
 }
