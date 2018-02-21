@@ -38,7 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
                 accountFrom.tryGetLock(1);
             }
 
-            if (accountFrom.getMoney() < amount) {
+            if (accountFrom.getBalance() < amount) {
                 return Status.INSUFFICIENT_FUNDS;
             }
 

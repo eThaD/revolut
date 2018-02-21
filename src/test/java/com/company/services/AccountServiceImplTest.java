@@ -24,10 +24,10 @@ public class AccountServiceImplTest {
         UuidProvider uuidProvider = mock(UuidProvider.class);
         AccountServiceImpl sut = new AccountServiceImpl(accountStore, uuidProvider);
 
-        Account account = sut.getAccount("acc1");
+        AccountSnapshot account = sut.getAccountSnapshot("acc1");
 
         assertEquals(account.getId(), "acc1" );
-        assertEquals(account.getMoney(), 555 );
+        assertEquals(account.getBalance(), 555 );
     }
 
     @Test
@@ -37,7 +37,7 @@ public class AccountServiceImplTest {
         UuidProvider uuidProvider = mock(UuidProvider.class);
         AccountServiceImpl sut = new AccountServiceImpl(accountStore, uuidProvider);
 
-        Account account = sut.getAccount("acc1");
+        AccountSnapshot account = sut.getAccountSnapshot("acc1");
 
         assertNull(account);
     }
@@ -59,7 +59,7 @@ public class AccountServiceImplTest {
         ArgumentCaptor<Account> argumentCaptor = ArgumentCaptor.forClass(Account.class);
         verify(accountStore).createAccount(eq("uuid1"), argumentCaptor.capture());
         assertEquals("uuid1", argumentCaptor.getValue().getId());
-        assertEquals(0, argumentCaptor.getValue().getMoney());
+        assertEquals(0, argumentCaptor.getValue().getBalance());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class AccountServiceImplTest {
         ArgumentCaptor<Account> argumentCaptor = ArgumentCaptor.forClass(Account.class);
         verify(accountStore).createAccount(eq("uuid2"), argumentCaptor.capture());
         assertEquals("uuid2", argumentCaptor.getValue().getId());
-        assertEquals(0, argumentCaptor.getValue().getMoney());
+        assertEquals(0, argumentCaptor.getValue().getBalance());
     }
 
 

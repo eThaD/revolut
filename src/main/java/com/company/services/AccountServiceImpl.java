@@ -27,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccount(String id) {
-        return accountStore.getAccount(id);
+    public AccountSnapshot getAccountSnapshot(String id) {
+        return AccountSnapshot.fromAccount(accountStore.getAccount(id));
     }
 }

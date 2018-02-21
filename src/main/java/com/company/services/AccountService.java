@@ -7,5 +7,5 @@ import com.company.store.Account;
  */
 public interface AccountService {
     String createAccount();
-    Account getAccount(String id);
+    AccountSnapshot getAccountSnapshot(String id);
 }

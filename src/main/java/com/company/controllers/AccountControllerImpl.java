@@ -1,8 +1,8 @@
 package com.company.controllers;
 
-import com.company.controllers.AccountController;
 import com.company.dto.Account;
 import com.company.services.AccountService;
+import com.company.services.AccountSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import spark.Request;
@@ -28,13 +28,13 @@ public class AccountControllerImpl implements AccountController {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
-        com.company.store.Account account = accountService.getAccount(req.params("id"));
-        if (account == null) {
+        AccountSnapshot accountSnapshot = accountService.getAccountSnapshot(req.params("id"));
+        if (accountSnapshot == null) {
             res.status(404);
             return null;
         }
 
-        String accountJson = gson.toJson(new Account(account.getId(), account.getMoney()));
+        String accountJson = gson.toJson(new Account(accountSnapshot.getId(), accountSnapshot.getBalance()));
         return accountJson;
     }
 }

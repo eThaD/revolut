@@ -2,21 +2,19 @@ package com.company.store;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by eThaD on 18.02.2018.
  */
 public class Account {
     private String id;
-    private int money;
+    private int balance;
     private Lock lock;
 
-    public Account(String id, int initialSum) {
+    public Account(String id, int initialBalance) {
         this.id = id;
-        this.money = initialSum;
+        this.balance = initialBalance;
         this.lock = new ReentrantLock();
     }
 
@@ -32,16 +30,16 @@ public class Account {
         return id;
     }
 
-    public int getMoney() {
-        return money;
+    public int getBalance() {
+        return balance;
     }
 
     public void add(int delta) {
-        this.money =+ delta;
+        this.balance =+ delta;
     }
 
     public void subtract(int delta) {
-        this.money =- delta;
+        this.balance =- delta;
     }
 }
 
