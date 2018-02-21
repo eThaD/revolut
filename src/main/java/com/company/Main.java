@@ -7,8 +7,6 @@ import com.company.controllers.TransactionControllerImpl;
 import com.company.services.*;
 import com.company.store.AccountStore;
 import com.company.store.InMemoryAccountStore;
-import com.company.store.InMemoryTransactionStore;
-import com.company.store.TransactionStore;
 import com.company.utils.UuidProvider;
 import com.company.utils.UuidProviderImpl;
 
@@ -22,8 +20,6 @@ public class Main {
         AccountService accountService = new AccountServiceImpl(accountStore, uuidProvider);
         AccountController accountController = new AccountControllerImpl(accountService);
 
-        TransactionStore transactionStore = new InMemoryTransactionStore();
-        TransactionRepository transactionRepository = new TransactionRepositoryImpl(transactionStore);
         TransactionService transactionService = new TransactionServiceImpl(accountStore);
         TransactionController transactionController = new TransactionControllerImpl(transactionService);
 
