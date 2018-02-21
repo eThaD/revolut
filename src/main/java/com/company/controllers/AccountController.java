@@ -8,5 +8,6 @@ import spark.Response;
  */
 public interface AccountController {
     Object createAccount(Request request, Response response);
+
     Object getAccount(Request req, Response res);
 }

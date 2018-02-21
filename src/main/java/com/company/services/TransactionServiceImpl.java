@@ -43,7 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             if (firstToLock.tryGetLock(1)) {
                 try {
-                    if (secondToLock.tryGetLock(1)){
+                    if (secondToLock.tryGetLock(1)) {
                         try {
                             if (accountFrom.getBalance() < amount) {
                                 return Status.INSUFFICIENT_FUNDS;
@@ -77,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         try {
-            if (account.tryGetLock(1)){
+            if (account.tryGetLock(1)) {
                 account.add(amount);
                 account.unlock();
                 return Status.SUCCESS;

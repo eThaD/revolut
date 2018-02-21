@@ -18,7 +18,7 @@ public class AccountServiceImplTest {
     // TODO: Make a common setup for all tests
 
     @Test
-    public void getAccount_returnsAccount_ifAccountExistsInStore(){
+    public void getAccount_returnsAccount_ifAccountExistsInStore() {
         AccountStore accountStore = mock(AccountStore.class);
         when(accountStore.getAccount("acc1")).thenReturn(new Account("acc1", 555));
         UuidProvider uuidProvider = mock(UuidProvider.class);
@@ -26,12 +26,12 @@ public class AccountServiceImplTest {
 
         AccountSnapshot account = sut.getAccountSnapshot("acc1");
 
-        assertEquals(account.getId(), "acc1" );
-        assertEquals(account.getBalance(), 555 );
+        assertEquals(account.getId(), "acc1");
+        assertEquals(account.getBalance(), 555);
     }
 
     @Test
-    public void getAccount_returnsNull_ifAccountDoesntExistInStore(){
+    public void getAccount_returnsNull_ifAccountDoesntExistInStore() {
         AccountStore accountStore = mock(AccountStore.class);
         when(accountStore.getAccount("acc1")).thenReturn(null);
         UuidProvider uuidProvider = mock(UuidProvider.class);

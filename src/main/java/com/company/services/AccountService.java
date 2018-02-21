@@ -5,5 +5,6 @@ package com.company.services;
  */
 public interface AccountService {
     String createAccount();
+
     AccountSnapshot getAccountSnapshot(String id);
 }
