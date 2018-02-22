@@ -3,6 +3,8 @@ package com.company.store;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InMemoryAccountStoreTest {
 
@@ -10,8 +12,10 @@ public class InMemoryAccountStoreTest {
     public void createAccount_doesNotOverrideAccount_ifKeyAlreadyInStore() {
         InMemoryAccountStore sut = new InMemoryAccountStore();
 
-        sut.createAccount("a", new Account("a", 55));
-        sut.createAccount("a", new Account("a", 88));
+        boolean res = sut.createAccount("a", new Account("a", 55));
+        assertTrue(res);
+        res = sut.createAccount("a", new Account("a", 88));
+        assertFalse(res);
 
         Account account = sut.getAccount("a");
 
