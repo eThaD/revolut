@@ -21,3 +21,12 @@ dependencies {
     testCompile "org.mockito:mockito-core:2.+"
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
 }
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Revolut test task',
+                'Implementation-Version': 0.1,
+                'Main-Class': 'com.company.Main'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
