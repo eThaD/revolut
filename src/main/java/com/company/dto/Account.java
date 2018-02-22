@@ -11,4 +11,12 @@ public class Account {
         this.id = id;
         this.balance = balance;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
 }
