@@ -13,7 +13,7 @@ public class InMemoryAccountStore implements AccountStore {
     }
 
     @Override
-    public boolean createAccount(String accountId, Account account) {
+    public boolean insertAccount(String accountId, Account account) {
         Account accountInStore =
                 this
                 .accounts

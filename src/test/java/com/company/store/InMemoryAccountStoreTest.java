@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class InMemoryAccountStoreTest {
 
     @Test
-    public void createAccount_doesNotOverrideAccount_ifKeyAlreadyInStore() {
+    public void insertAccount_doesNotOverrideAccount_ifKeyAlreadyInStore() {
         InMemoryAccountStore sut = new InMemoryAccountStore();
 
-        boolean res = sut.createAccount("a", new Account("a", 55));
+        boolean res = sut.insertAccount("a", new Account("a", 55));
         assertTrue(res);
-        res = sut.createAccount("a", new Account("a", 88));
+        res = sut.insertAccount("a", new Account("a", 88));
         assertFalse(res);
 
         Account account = sut.getAccount("a");

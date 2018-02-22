@@ -45,7 +45,7 @@ public class AccountServiceImplTest {
     @Test
     public void createAccount_createsAccountAndSavesIdInStore() {
         AccountStore accountStore = mock(AccountStore.class);
-        when(accountStore.createAccount(eq("uuid1"), any(Account.class))).thenReturn(true);
+        when(accountStore.insertAccount(eq("uuid1"), any(Account.class))).thenReturn(true);
 
         UuidProvider uuidProvider = mock(UuidProvider.class);
         when(uuidProvider.GenerateUUID()).thenReturn("uuid1");
@@ -57,7 +57,7 @@ public class AccountServiceImplTest {
         assertEquals("uuid1", accountId);
 
         ArgumentCaptor<Account> argumentCaptor = ArgumentCaptor.forClass(Account.class);
-        verify(accountStore).createAccount(eq("uuid1"), argumentCaptor.capture());
+        verify(accountStore).insertAccount(eq("uuid1"), argumentCaptor.capture());
         assertEquals("uuid1", argumentCaptor.getValue().getId());
         assertEquals(0, argumentCaptor.getValue().getBalance());
     }
@@ -65,8 +65,8 @@ public class AccountServiceImplTest {
     @Test
     public void createAccount_regeneratesUuidForAccount_ifAccoutWithUuidAlreadyExists() {
         AccountStore accountStore = mock(AccountStore.class);
-        when(accountStore.createAccount(eq("uuid1"), any(Account.class))).thenReturn(false);
-        when(accountStore.createAccount(eq("uuid2"), any(Account.class))).thenReturn(true);
+        when(accountStore.insertAccount(eq("uuid1"), any(Account.class))).thenReturn(false);
+        when(accountStore.insertAccount(eq("uuid2"), any(Account.class))).thenReturn(true);
 
         UuidProvider uuidProvider = mock(UuidProvider.class);
         when(uuidProvider.GenerateUUID()).thenReturn("uuid1").thenReturn("uuid2");
@@ -78,7 +78,7 @@ public class AccountServiceImplTest {
         assertEquals("uuid2", accountId);
 
         ArgumentCaptor<Account> argumentCaptor = ArgumentCaptor.forClass(Account.class);
-        verify(accountStore).createAccount(eq("uuid2"), argumentCaptor.capture());
+        verify(accountStore).insertAccount(eq("uuid2"), argumentCaptor.capture());
         assertEquals("uuid2", argumentCaptor.getValue().getId());
         assertEquals(0, argumentCaptor.getValue().getBalance());
     }
@@ -87,7 +87,7 @@ public class AccountServiceImplTest {
     @Test
     public void createAccount_doesNotGoIntoInfiniteLoop_ifStoreAlwaysReturnFalse() {
         AccountStore accountStore = mock(AccountStore.class);
-        when(accountStore.createAccount(anyString(), any(Account.class))).thenReturn(false);
+        when(accountStore.insertAccount(anyString(), any(Account.class))).thenReturn(false);
 
         UuidProvider uuidProvider = mock(UuidProvider.class);
         AccountServiceImpl sut = new AccountServiceImpl(accountStore, uuidProvider);

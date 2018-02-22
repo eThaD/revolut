@@ -20,7 +20,7 @@ public class AccountServiceImpl implements AccountService {
     public String createAccount() {
         for (int i = 0; i < 10; i++) {
             String id = uuidProvider.GenerateUUID();
-            if (accountStore.createAccount(id, new Account(id, 0))) return id;
+            if (accountStore.insertAccount(id, new Account(id, 0))) return id;
         }
         return null;
     }
