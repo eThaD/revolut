@@ -14,11 +14,15 @@ public class InMemoryAccountStore implements AccountStore {
 
     @Override
     public boolean createAccount(String accountId, Account account) {
-        if (this.accounts.get(accountId) == null) {
-            this.accounts.put(accountId, account);
-            return true;
-        }
-        return false;
+        Account accountInStore =
+                this
+                .accounts
+                .compute(
+                        accountId,
+                        (s, existingAccount) -> (existingAccount == null ? account : existingAccount)
+                );
+
+        return accountInStore == account;
     }
 
     @Override
