@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FunctionalTest {
     @Test
-    public void ItIsPossibleToTopUpAndWithdrawMoneyFromAccount() {
+    public void itIsPossibleToTopUpAndWithdrawMoneyFromAccount() {
         Main.main(null);
 
         String accountId = createAccount();
@@ -28,32 +28,32 @@ public class FunctionalTest {
         assertEquals(accountId, account.getId());
         assertEquals(0, account.getBalance());
 
-        TopUp(new OneAccountTransaction(accountId, 100));
+        topUp(new OneAccountTransaction(accountId, 100));
 
         account = getAccount(accountId);
         assertEquals(100, account.getBalance());
 
-        Withdraw(new OneAccountTransaction(accountId, 50));
+        withdraw(new OneAccountTransaction(accountId, 50));
         account = getAccount(accountId);
         assertEquals(50, account.getBalance());
     }
 
     @Test
-    public void ItIsPossibleToTransferMoneyBetweenAccounts() {
+    public void itIsPossibleToTransferMoneyBetweenAccounts() {
         Main.main(null);
 
         String accountId1 = createAccount();
         String accountId2 = createAccount();
         String accountId3 = createAccount();
 
-        TopUp(new OneAccountTransaction(accountId1, 100));
-        TopUp(new OneAccountTransaction(accountId2, 200));
-        TopUp(new OneAccountTransaction(accountId3, 300));
+        topUp(new OneAccountTransaction(accountId1, 100));
+        topUp(new OneAccountTransaction(accountId2, 200));
+        topUp(new OneAccountTransaction(accountId3, 300));
 
-        SubmitTransaction(new Transaction(accountId1, accountId2, 50));
-        SubmitTransaction(new Transaction(accountId1, accountId3, 25));
-        SubmitTransaction(new Transaction(accountId2, accountId3, 100));
-        SubmitTransaction(new Transaction(accountId3, accountId1, 1));
+        submitTransaction(new Transaction(accountId1, accountId2, 50));
+        submitTransaction(new Transaction(accountId1, accountId3, 25));
+        submitTransaction(new Transaction(accountId2, accountId3, 100));
+        submitTransaction(new Transaction(accountId3, accountId1, 1));
 
         Account account1 = getAccount(accountId1);
         Account account2 = getAccount(accountId2);
@@ -65,33 +65,33 @@ public class FunctionalTest {
     }
 
     @Test
-    public void NoLocksUnderTransactionalLoad() {
+    public void noLocksUnderTransactionalLoad() {
         Main.main(null);
 
         String accountId1 = createAccount();
         String accountId2 = createAccount();
         String accountId3 = createAccount();
 
-        TopUp(new OneAccountTransaction(accountId1, 100000));
-        TopUp(new OneAccountTransaction(accountId2, 100000));
-        TopUp(new OneAccountTransaction(accountId3, 100000));
+        topUp(new OneAccountTransaction(accountId1, 100000));
+        topUp(new OneAccountTransaction(accountId2, 100000));
+        topUp(new OneAccountTransaction(accountId3, 100000));
 
         Thread t1 = new Thread(() -> {
             for (int i = 0; i < 1000; i++) {
-                SubmitTransaction(new Transaction(accountId1, accountId2, 1));
-                SubmitTransaction(new Transaction(accountId1, accountId3, 1));
+                submitTransaction(new Transaction(accountId1, accountId2, 1));
+                submitTransaction(new Transaction(accountId1, accountId3, 1));
             }
         });
         Thread t2 = new Thread(() -> {
             for (int i = 0; i < 1000; i++) {
-                SubmitTransaction(new Transaction(accountId2, accountId1, 2));
-                SubmitTransaction(new Transaction(accountId2, accountId3, 2));
+                submitTransaction(new Transaction(accountId2, accountId1, 2));
+                submitTransaction(new Transaction(accountId2, accountId3, 2));
             }
         });
         Thread t3 = new Thread(() -> {
             for (int i = 0; i < 1000; i++) {
-                SubmitTransaction(new Transaction(accountId3, accountId1, 3));
-                SubmitTransaction(new Transaction(accountId3, accountId2, 3));
+                submitTransaction(new Transaction(accountId3, accountId1, 3));
+                submitTransaction(new Transaction(accountId3, accountId2, 3));
             }
         });
 
@@ -116,47 +116,47 @@ public class FunctionalTest {
         assertEquals(97000, account3.getBalance());
     }
 
-    private void SubmitTransaction(Transaction transaction) {
+    private void submitTransaction(Transaction transaction) {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
-        Response resp = Post("http://localhost:4567/transactions/", transactionJson);
+        Response resp = post("http://localhost:4567/transactions/", transactionJson);
         assertEquals(200, resp.Status, resp.body);
     }
 
-    private void TopUp(OneAccountTransaction transaction) {
+    private void topUp(OneAccountTransaction transaction) {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
-        Response resp = Post("http://localhost:4567/topUp/", transactionJson);
+        Response resp = post("http://localhost:4567/topUp/", transactionJson);
         assertEquals(200, resp.Status, resp.body);
     }
 
-    private void Withdraw(OneAccountTransaction transaction) {
+    private void withdraw(OneAccountTransaction transaction) {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
-        Response resp = Post("http://localhost:4567/withdraw/", transactionJson);
+        Response resp = post("http://localhost:4567/withdraw/", transactionJson);
         assertEquals(200, resp.Status, resp.body);
     }
 
     private String createAccount() {
-        Response resp = Post("http://localhost:4567/accounts/", null);
+        Response resp = post("http://localhost:4567/accounts/", null);
         assertEquals(200, resp.Status);
         UUID.fromString(resp.body);
         return resp.body;
     }
 
     private Account getAccount(String accountId) {
-        Response resp = Get("http://localhost:4567/accounts/" + accountId);
+        Response resp = get("http://localhost:4567/accounts/" + accountId);
         assertEquals(200, resp.Status);
         Gson gson = new GsonBuilder().create();
         Account account = gson.fromJson(resp.body, Account.class);
         return account;
     }
 
-    private Response Post(String url, String body) {
+    private Response post(String url, String body) {
         return doRequest("POST", url, body);
     }
 
-    private Response Get(String url) {
+    private Response get(String url) {
         return doRequest("GET", url, null);
     }
 
