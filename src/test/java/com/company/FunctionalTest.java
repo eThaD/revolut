@@ -34,6 +34,32 @@ public class FunctionalTest {
         assertEquals(100, account.getBalance());
     }
 
+    @Test
+    public void RunSeveralTransactions_BalancesCalculatedCorrectly() {
+        Main.main(null);
+
+        String accountId1 = createAccount();
+        String accountId2 = createAccount();
+        String accountId3 = createAccount();
+
+        SubmitTransaction(new Transaction(null, accountId1, 100));
+        SubmitTransaction(new Transaction(null, accountId2, 200));
+        SubmitTransaction(new Transaction(null, accountId3, 300));
+
+        SubmitTransaction(new Transaction(accountId1, accountId2, 50));
+        SubmitTransaction(new Transaction(accountId1, accountId3, 25));
+        SubmitTransaction(new Transaction(accountId2, accountId3, 100));
+        SubmitTransaction(new Transaction(accountId3, accountId1, 1));
+
+        Account account1 = getAccount(accountId1);
+        Account account2 = getAccount(accountId2);
+        Account account3 = getAccount(accountId3);
+
+        assertEquals(26, account1.getBalance());
+        assertEquals(150, account2.getBalance());
+        assertEquals(424, account3.getBalance());
+    }
+
     private void SubmitTransaction(Transaction transaction) {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
