@@ -28,23 +28,13 @@ public class TransactionControllerImpl implements TransactionController {
 
         Transaction transaction = gson.fromJson(request.body(), Transaction.class);
 
-        if (transaction.getFrom() == null && transaction.getTo() == null) {
+        if (transaction.getFrom() == null || transaction.getTo() == null) {
             response.status(400);
-            return "From and To accounts are not provided";
+            return "From or To accounts are not provided";
         }
         if (transaction.getAmount() <= 0) {
             response.status(400);
             return "Amount to transfer is incorrect";
-        }
-        if (transaction.getFrom() == null) {
-            Status status = transactionService.topUp(transaction.getTo(), transaction.getAmount());
-            response.status(mapInternalStatusToHttpStatus(status));
-            return "";
-        }
-        if (transaction.getTo() == null) {
-            Status status = transactionService.withdraw(transaction.getFrom(), transaction.getAmount());
-            response.status(mapInternalStatusToHttpStatus(status));
-            return "";
         }
 
         Status status = transactionService.transferMoney(transaction.getFrom(), transaction.getTo(), transaction.getAmount());
