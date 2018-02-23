@@ -30,5 +30,7 @@ public class Main {
         get("/accounts/:id", (req, res) -> accountController.getAccount(req, res));
 
         post("/transactions/", (req, res) -> transactionController.transfer(req, res));
+        post("/topUp/", (req, res) -> transactionController.topUp(req, res));
+        post("/withdraw/", (req, res) -> transactionController.withdraw(req, res));
     }
 }
