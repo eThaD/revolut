@@ -16,11 +16,11 @@ public class InMemoryAccountStore implements AccountStore {
     public boolean insertAccount(String accountId, Account account) {
         Account accountInStore =
                 this
-                .accounts
-                .compute(
-                        accountId,
-                        (s, existingAccount) -> (existingAccount == null ? account : existingAccount)
-                );
+                        .accounts
+                        .compute(
+                                accountId,
+                                (s, existingAccount) -> (existingAccount == null ? account : existingAccount)
+                        );
 
         return accountInStore == account;
     }
