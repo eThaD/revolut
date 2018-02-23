@@ -63,11 +63,63 @@ public class FunctionalTest {
         assertEquals(424, account3.getBalance());
     }
 
+    @Test
+    public void NoLocksUnderTransactionalLoad() {
+        Main.main(null);
+
+        String accountId1 = createAccount();
+        String accountId2 = createAccount();
+        String accountId3 = createAccount();
+
+        SubmitTransaction(new Transaction(null, accountId1, 100000));
+        SubmitTransaction(new Transaction(null, accountId2, 100000));
+        SubmitTransaction(new Transaction(null, accountId3, 100000));
+
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                SubmitTransaction(new Transaction(accountId1, accountId2, 1));
+                SubmitTransaction(new Transaction(accountId1, accountId3, 1));
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                SubmitTransaction(new Transaction(accountId2, accountId1, 2));
+                SubmitTransaction(new Transaction(accountId2, accountId3, 2));
+            }
+        });
+        Thread t3 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                SubmitTransaction(new Transaction(accountId3, accountId1, 3));
+                SubmitTransaction(new Transaction(accountId3, accountId2, 3));
+            }
+        });
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        try {
+            t1.join();
+            t2.join();
+            t3.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Account account1 = getAccount(accountId1);
+        Account account2 = getAccount(accountId2);
+        Account account3 = getAccount(accountId3);
+
+        assertEquals(103000, account1.getBalance());
+        assertEquals(100000, account2.getBalance());
+        assertEquals(97000, account3.getBalance());
+    }
+
     private void SubmitTransaction(Transaction transaction) {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
         Response resp = Post("http://localhost:4567/transactions/", transactionJson);
-        assertEquals(200, resp.Status);
+        assertEquals(200, resp.Status, resp.body);
     }
 
     private String createAccount() {
