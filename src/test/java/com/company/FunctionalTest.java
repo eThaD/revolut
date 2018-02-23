@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FunctionalTest {
     @Test
-    public void CreateAccountAndTopUp() {
+    public void ItIsPossibleToTopUpAndWithdrawMoneyFromAccount() {
         Main.main(null);
 
         String accountId = createAccount();
@@ -30,8 +30,11 @@ public class FunctionalTest {
         SubmitTransaction(new Transaction(null, accountId, 100));
 
         account = getAccount(accountId);
-        assertEquals(accountId, account.getId());
         assertEquals(100, account.getBalance());
+
+        SubmitTransaction(new Transaction(accountId, null, 50));
+        account = getAccount(accountId);
+        assertEquals(50, account.getBalance());
     }
 
     @Test
