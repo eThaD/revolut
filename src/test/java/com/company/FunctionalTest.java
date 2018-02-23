@@ -38,7 +38,7 @@ public class FunctionalTest {
     }
 
     @Test
-    public void RunSeveralTransactions_BalancesCalculatedCorrectly() {
+    public void ItIsPossibleToTransferMoneyBetweenAccounts() {
         Main.main(null);
 
         String accountId1 = createAccount();
