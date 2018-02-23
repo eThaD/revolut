@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.dto.Account;
+import com.company.dto.OneAccountTransaction;
 import com.company.dto.Transaction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,12 +28,12 @@ public class FunctionalTest {
         assertEquals(accountId, account.getId());
         assertEquals(0, account.getBalance());
 
-        SubmitTransaction(new Transaction(null, accountId, 100));
+        TopUp(new OneAccountTransaction(accountId, 100));
 
         account = getAccount(accountId);
         assertEquals(100, account.getBalance());
 
-        SubmitTransaction(new Transaction(accountId, null, 50));
+        Withdraw(new OneAccountTransaction(accountId, 50));
         account = getAccount(accountId);
         assertEquals(50, account.getBalance());
     }
@@ -45,9 +46,9 @@ public class FunctionalTest {
         String accountId2 = createAccount();
         String accountId3 = createAccount();
 
-        SubmitTransaction(new Transaction(null, accountId1, 100));
-        SubmitTransaction(new Transaction(null, accountId2, 200));
-        SubmitTransaction(new Transaction(null, accountId3, 300));
+        TopUp(new OneAccountTransaction(accountId1, 100));
+        TopUp(new OneAccountTransaction(accountId2, 200));
+        TopUp(new OneAccountTransaction(accountId3, 300));
 
         SubmitTransaction(new Transaction(accountId1, accountId2, 50));
         SubmitTransaction(new Transaction(accountId1, accountId3, 25));
@@ -71,9 +72,9 @@ public class FunctionalTest {
         String accountId2 = createAccount();
         String accountId3 = createAccount();
 
-        SubmitTransaction(new Transaction(null, accountId1, 100000));
-        SubmitTransaction(new Transaction(null, accountId2, 100000));
-        SubmitTransaction(new Transaction(null, accountId3, 100000));
+        TopUp(new OneAccountTransaction(accountId1, 100000));
+        TopUp(new OneAccountTransaction(accountId2, 100000));
+        TopUp(new OneAccountTransaction(accountId3, 100000));
 
         Thread t1 = new Thread(() -> {
             for (int i = 0; i < 1000; i++) {
@@ -119,6 +120,20 @@ public class FunctionalTest {
         Gson gson = new GsonBuilder().create();
         String transactionJson = gson.toJson(transaction);
         Response resp = Post("http://localhost:4567/transactions/", transactionJson);
+        assertEquals(200, resp.Status, resp.body);
+    }
+
+    private void TopUp(OneAccountTransaction transaction) {
+        Gson gson = new GsonBuilder().create();
+        String transactionJson = gson.toJson(transaction);
+        Response resp = Post("http://localhost:4567/topUp/", transactionJson);
+        assertEquals(200, resp.Status, resp.body);
+    }
+
+    private void Withdraw(OneAccountTransaction transaction) {
+        Gson gson = new GsonBuilder().create();
+        String transactionJson = gson.toJson(transaction);
+        Response resp = Post("http://localhost:4567/withdraw/", transactionJson);
         assertEquals(200, resp.Status, resp.body);
     }
 
