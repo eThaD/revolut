@@ -52,7 +52,7 @@ public class TransactionControllerImpl implements TransactionController {
         return oneAccountTransfer(request, response, (account, amount) -> (transactionService.topUp(account, amount)));
     }
 
-    public Object oneAccountTransfer(Request request, Response response, BiFunction<String, Integer, Status> operation) {
+    private Object oneAccountTransfer(Request request, Response response, BiFunction<String, Integer, Status> operation) {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
